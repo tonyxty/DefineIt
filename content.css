@@ -1,0 +1,32 @@
+#defineit-popover {
+  position: absolute;
+  display: none;
+  z-index: 1000;
+  max-width: 80em;
+  padding: 8px;
+  background-color: #feffcd;
+  box-shadow: 3px 3px 3px #888888;
+}
+#defineit-popover > header {
+  font-size: 18px;
+  margin-bottom: 0.33em;
+  font-weight: bold;
+}
+#defineit-popover ul, ol {
+  margin-left: 0;
+  padding-left: 1em;
+}
+#defineit-popover .controls {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+#defineit-popover .items {
+  list-style-type: lower-roman;
+}
+#defineit-popover .definitions {
+  list-style-type: decimal;
+}
+#defineit-popover .pronunciation {
+  margin-left: 3px;
+}

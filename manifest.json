@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "DefineIt",
+  "version": "1.0",
+
+  "description": "Show definitions of selected term",
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+
+  "permissions": [
+    "https://*.google.com/*"
+  ]
+}
