@@ -25,65 +25,64 @@
     document.body.appendChild(popover);
 
     popover.showResult = function (result) {
-      this.header.innerText = result.term;
-
-      const content = this.content;
-      while (content.firstChild)
-        content.firstChild.remove();
-
-      if (result.phonetic) {
-        const phonetic = document.createElement('span');
-        phonetic.innerText = result.phonetic;
-        content.appendChild(phonetic);
-      }
-      if (result.pronunciation) {
-        const pronunciation = document.createElement('audio');
-        pronunciation.src = result.pronunciation;
-        const playAudio = document.createElement('input');
-        playAudio.type = 'image';
-        playAudio.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAABBUlEQVQokZ3SsUoDURAF0LNLkLAsFiIWIaSw2sJSrCwsLFP4ARYWVuIvWOUDRCz8BAu/QyysgojRQhtRSCOICGnybGZxE63ypnjM5d6ZeXNfliSLnFYzyWQ5KqyjwDeeMUrSdEaZItDBAEO84yPuYeCd5DdqURc3eMARejFND8d4xDW6jUYKnEflbeQzlcmxgzucol0Lt/CCg6ZgPnAYvM1a2MekHgNraDW6rTaeM0E/SXLU2yoy2T4uggQlzgIvA5vWdozxisuw4g3thl0b2MNT8Mb1KCOc4CsW9d8p8Bm8EWZ8rHCFe1SBreA28OqPjw1xiV0sR74UVpTzW84W/av5Qir8AF9LfL+SwydpAAAAAElFTkSuQmCC';
-        playAudio.classList.add('pronunciation');
-        playAudio.addEventListener('click', function () {
-          pronunciation.play();
-        });
-        content.appendChild(playAudio);
-        content.appendChild(pronunciation);
-      }
-
-      const items = document.createElement('ol');
-      items.classList.add('items');
-      result.items.forEach(function (item) {
-        const pos = document.createElement('span');
-        pos.innerText = item.pos;
-
-        const definitions = document.createElement('ol');
-        definitions.classList.add('definitions');
-        item.definitions.forEach(function (definition) {
-          const li = document.createElement('li');
-          li.innerText = definition;
-          definitions.appendChild(li);
-        });
-
-        const li = document.createElement('li');
-        li.appendChild(pos);
-        li.appendChild(definitions);
-
-        items.appendChild(li);
-      });
-      content.appendChild(items);
-      const p = document.createElement('p');
-      let sourceElem;
-      if (result.source.href) {
-        sourceElem = document.createElement('a');
-        sourceElem.href = result.source.href;
-        sourceElem.target = '_blank';
+      if (result.status != 'ok') {
+        this.header.innerText = result.status;
       } else {
-        sourceElem = document.createElement('span');
+        result = result.result;
+        this.header.innerText = result.term;
+
+        const content = this.content;
+        while (content.firstChild)
+          content.firstChild.remove();
+
+        if (result.phonetic) {
+          const phonetic = document.createElement('span');
+          phonetic.innerText = result.phonetic;
+          content.appendChild(phonetic);
+        }
+        if (result.pronunciation) {
+          const pronunciation = document.createElement('audio');
+          pronunciation.src = result.pronunciation;
+          const playAudio = document.createElement('input');
+          playAudio.type = 'image';
+          playAudio.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAABBUlEQVQokZ3SsUoDURAF0LNLkLAsFiIWIaSw2sJSrCwsLFP4ARYWVuIvWOUDRCz8BAu/QyysgojRQhtRSCOICGnybGZxE63ypnjM5d6ZeXNfliSLnFYzyWQ5KqyjwDeeMUrSdEaZItDBAEO84yPuYeCd5DdqURc3eMARejFND8d4xDW6jUYKnEflbeQzlcmxgzucol0Lt/CCg6ZgPnAYvM1a2MekHgNraDW6rTaeM0E/SXLU2yoy2T4uggQlzgIvA5vWdozxisuw4g3thl0b2MNT8Mb1KCOc4CsW9d8p8Bm8EWZ8rHCFe1SBreA28OqPjw1xiV0sR74UVpTzW84W/av5Qir8AF9LfL+SwydpAAAAAElFTkSuQmCC';
+          playAudio.classList.add('pronunciation');
+          playAudio.addEventListener('click', function () {
+            pronunciation.play();
+          });
+          content.appendChild(playAudio);
+          content.appendChild(pronunciation);
+        }
+
+        const senses = document.createElement('ol');
+        senses.classList.add('senses');
+        result.senses.forEach(function (sense) {
+          const pos = document.createElement('span');
+          pos.innerText = sense.pos;
+          const definition = document.createElement('div');
+          definition.innerText = sense.definition;
+
+          const li = document.createElement('li');
+          li.appendChild(pos);
+          li.appendChild(definition);
+
+          senses.appendChild(li);
+        });
+        content.appendChild(senses);
+        const p = document.createElement('p');
+        let sourceElem;
+        if (result.source.href) {
+          sourceElem = document.createElement('a');
+          sourceElem.href = result.source.href;
+          sourceElem.target = '_blank';
+        } else {
+          sourceElem = document.createElement('span');
+        }
+        sourceElem.innerText = result.source.name;
+        p.innerText = "Definitions from ";
+        p.appendChild(sourceElem);
+        content.appendChild(p);
       }
-      sourceElem.innerText = result.source.name;
-      p.innerText = "Definitions from ";
-      p.appendChild(sourceElem);
-      content.appendChild(p);
     }
     return popover;
   })();
@@ -121,9 +120,6 @@
 
     browser.runtime.sendMessage({'text': text}).then(function (results) {
       popover.showResult(results);
-    }, function (error) {
-      popover.content.innerText = error.message;
-    }).finally(function () {
       const width = popover.offsetWidth;
       popover.style.left = '0';
       if (popover.offsetWidth > width)

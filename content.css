@@ -21,10 +21,10 @@
   right: 5px;
   top: 5px;
 }
-#defineit-popover .items {
+#defineit-popover .senses {
   list-style-type: lower-roman;
 }
-#defineit-popover .definitions {
+#defineit-popover .definition {
   list-style-type: decimal;
 }
 #defineit-popover .pronunciation {
